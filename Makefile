@@ -15,4 +15,4 @@ test:
 pack:
 	rm -Rf $(OUTPUT_DIR)
 	mkdir $(OUTPUT_DIR)
-	cd src && dotnet pack --no-build --no-restore -c $(CONFIGURATION) -o $(OUTPUT_DIR)
+	cd src && dotnet pack --no-build --no-restore -c $(CONFIGURATION) -o $(OUTPUT_DIR) ./pipe/pipe.csproj
