@@ -372,3 +372,5 @@ MigrationBackup/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,dotnet
 output/
+
+.idea/
