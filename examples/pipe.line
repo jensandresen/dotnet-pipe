@@ -1,0 +1,9 @@
+foo:
+    ls -la
+#    echo test
+#    printenv
+#    dotnet --help
+
+bar:
+    echo lala
+    dotnet --help
