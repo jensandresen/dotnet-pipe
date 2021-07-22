@@ -10,8 +10,8 @@ namespace pipe.Shells
         {
             _operatingSystemTypeProvider = operatingSystemTypeProvider;
         }
-        
-        private string GetDefaultOSShell()
+
+        public string GetDefaultOSShell()
         {
             var os = _operatingSystemTypeProvider.Get();
             switch (os)
@@ -37,16 +37,16 @@ namespace pipe.Shells
             switch (name)
             {
                 case "sh":
-                    return new Command("sh", action => $"-c (\"{action}\")");
+                    return new Command("sh", action => $"-c \"{action.Replace("\"", "\\\"")}\"");
                 case "bash":
-                    return new Command("bash", action => $"-c (\"{action}\")");
+                    return new Command("bash", action => $"-c \"{action.Replace("\"", "\\\"")}\"");
                 case "pwsh":
                 case "powershell":
                     return new Command(
                         shell: _operatingSystemTypeProvider.Get() == OperatingSystemType.Windows
                             ? "powershell"
                             : "pwsh",
-                        prepper: action => $"-Command \"& {{ {action} }}\""
+                        prepper: action => $"-Command \"& {{ {action.Replace("\"", "`\"")} }}\""
                     );
                 default:
                     throw new ArgumentException($"Unknown shell with name {name}.");

@@ -48,7 +48,9 @@ namespace pipe.test.Builders
                 fileSystem: _fileSystem,
                 commandFactory: _commandFactory,
                 commandLineExecutor: _commandLineExecutor,
-                variableHelper: _variableHelper
+                variableHelper: _variableHelper,
+                logger: new NullLogger(),
+                splashScreen: Dummy.Of<ISplashScreen>()
             );
         }
     }

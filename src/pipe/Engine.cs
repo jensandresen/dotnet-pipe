@@ -12,45 +12,108 @@ namespace pipe
         private readonly ICommandFactory _commandFactory;
         private readonly ICommandLineExecutor _commandLineExecutor;
         private readonly IVariableHelper _variableHelper;
+        private readonly ILogger _logger;
+        private readonly ISplashScreen _splashScreen;
 
         public Engine(IFileSystem fileSystem, ICommandFactory commandFactory, ICommandLineExecutor commandLineExecutor,
-            IVariableHelper variableHelper)
+            IVariableHelper variableHelper, ILogger logger, ISplashScreen splashScreen)
         {
             _fileSystem = fileSystem;
             _commandFactory = commandFactory;
             _commandLineExecutor = commandLineExecutor;
             _variableHelper = variableHelper;
+            _logger = logger;
+            _splashScreen = splashScreen;
         }
         
         public void Run(string[] args)
         {
-            var (requestedSteps, variableOverrides, filePath) = CommandLineParser.Parse(args);
+            var (requestedSteps, variableOverrides, filePath, isVerbose) = CommandLineParser.Parse(args);
+            if (isVerbose)
+            {
+                _logger.EnableVerbosity();
+            }
+            
+            _splashScreen.Show();
+            
             if (requestedSteps.Length == 0 && variableOverrides.Length > 0)
             {
                 throw new MissingRequiredStepException("Please specify a step when passing variable overrides.");
             }
             
-            var pipelineFilePath =  filePath ?? _fileSystem.GetPathForLocalFile("pipe.line");
-            if (!_fileSystem.DoesFileExists(pipelineFilePath))
+            _logger.LogHeadline("Input:");
+            _logger.Log($"Requested steps:");
+            _logger.Log($"  {string.Join(" -> ", requestedSteps)}");
+            _logger.Log("Variable overrides:");
+            foreach (var (k, v) in variableOverrides)
             {
-                throw new FileNotFoundException($"Unable to locate a pipeline file at {pipelineFilePath}");
+                _logger.Log($"  {string.Join("=", k, v)}");
+            }
+            _logger.Log($"Pipeline file override: '{filePath}'");
+            _logger.Log("");
+            
+            _logger.LogHeadline("Pipeline file:");
+            var pipelineFilePath =  filePath; // ?? _fileSystem.GetPathForLocalFile("pipe.line");
+
+            if (!string.IsNullOrWhiteSpace(pipelineFilePath))
+            {
+                _logger.Log($"Looking for pipeline file at '{pipelineFilePath}'");
+                if (!_fileSystem.DoesFileExists(pipelineFilePath))
+                {
+                    throw new FileNotFoundException($"Unable to locate a pipeline file at {pipelineFilePath}");
+                }
+            }
+            else
+            {
+                var defaultFilePaths = new[]
+                {
+                    _fileSystem.GetPathForLocalFile("Pipeline"), 
+                    _fileSystem.GetPathForLocalFile("pipeline"), 
+                };
+                
+                pipelineFilePath = defaultFilePaths.FirstOrDefault(path => _fileSystem.DoesFileExists(path));
+                if (string.IsNullOrWhiteSpace(pipelineFilePath))
+                {
+                    throw new FileNotFoundException($"Unable to locate a pipeline file at default locations {string.Join(" or ", defaultFilePaths)}");
+                }
+
+                _logger.Log($"Looking for pipeline file at '{pipelineFilePath}'");
             }
             
+            _logger.Log("");
+            
             var pipelineFile = ReadPipelineFileFrom(pipelineFilePath);
-            var executionPipeline = BuildExecutionPipelineFrom(requestedSteps, pipelineFile);
+            var executionPipeline = BuildExecutionPipelineFrom(requestedSteps, pipelineFile).ToArray();
             var finalVariables = BuildFinalVariablesFrom(variableOverrides, pipelineFile);
             var command = CreateCommand(finalVariables);
 
+            _logger.LogHeadline("Variables:");
+            foreach (var (k, v) in finalVariables)
+            {
+                _logger.Log(string.Join("=", k, v));
+            }
+            _logger.Log("");
+            
+            _logger.LogHeadline("Steps to execute:");
+            _logger.Log(string.Join(" -> ", executionPipeline.Select(x => x.Name)));
+            _logger.Log("");
+
             foreach (var step in executionPipeline)
             {
+                _logger.LogHeadline($"Executing step '{step.Name}':");
+                
                 foreach (var action in step.Actions)
                 {
                     var shell = command.Shell;
-
+                    
+                    _logger.Log($"shell={shell}");
+                    _logger.Log($"action={action}");
+                    
                     var finalAction = _variableHelper.ExpandVariables(finalVariables, action);
                     var arguments = command.PrepareArguments(finalAction);
                     
                     _commandLineExecutor.Execute(shell, arguments);
+                    _logger.Log("");
                 }
             }
         }

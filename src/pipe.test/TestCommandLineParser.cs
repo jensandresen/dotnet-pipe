@@ -10,58 +10,58 @@ namespace pipe.test
         [Fact]
         public void returns_expected_steps_when_parsing_empty_list()
         {
-            var (steps, _, _) = CommandLineParser.Parse(Array.Empty<string>());
-            Assert.Empty(steps);
+            var result = CommandLineParser.Parse(Array.Empty<string>());
+            Assert.Empty(result.Steps);
         }
 
         [Fact]
         public void returns_expected_variables_when_parsing_empty_list()
         {
-            var (_, variables, _) = CommandLineParser.Parse(Array.Empty<string>());
-            Assert.Empty(variables);
+            var result = CommandLineParser.Parse(Array.Empty<string>());
+            Assert.Empty(result.Variables);
         }
 
         [Fact]
         public void returns_expected_steps_when_single_is_defined()
         {
-            var (steps, _, _) = CommandLineParser.Parse(new []{"foo"});
+            var result = CommandLineParser.Parse(new []{"foo"});
             Assert.Equal(
                 new[] {"foo"},
-                steps
+                result.Steps
             );
         }
 
         [Fact]
         public void returns_expected_steps_when_multiple_is_defined()
         {
-            var (steps, _, _) = CommandLineParser.Parse(new []{"foo", "bar"});
+            var result = CommandLineParser.Parse(new []{"foo", "bar"});
             Assert.Equal(
                 new[] {"foo", "bar"},
-                steps
+                result.Steps
             );
         }
 
         [Fact]
         public void returns_expected_variables_when_step_is_defined_but_no_variables()
         {
-            var (_, variables, _) = CommandLineParser.Parse(new []{"dummy"});
-            Assert.Empty(variables);
+            var result = CommandLineParser.Parse(new []{"dummy"});
+            Assert.Empty(result.Variables);
         }
 
         [Fact]
         public void returns_expected_variables_when_step_is_defined_and_single_variables_is_defined()
         {
-            var (_, variables, _) = CommandLineParser.Parse(new []{"dummy", "foo=bar"});
+            var result = CommandLineParser.Parse(new []{"dummy", "foo=bar"});
             Assert.Equal(
                 new[] {KeyValuePair.Create<string, string>("foo", "bar")},
-                variables
+                result.Variables
             );
         }
 
         [Fact]
         public void returns_expected_step_variable_when_both_is_defined()
         {
-            var (steps, variables, _) = CommandLineParser.Parse(new []
+            var result = CommandLineParser.Parse(new []
             {
                 "foo", 
                 "bar", 
@@ -71,7 +71,7 @@ namespace pipe.test
             
             Assert.Equal(
                 new[] {"foo", "bar"},
-                steps
+                result.Steps
             );
 
             Assert.Equal(
@@ -80,29 +80,29 @@ namespace pipe.test
                     KeyValuePair.Create<string, string>("baz", "qux"),
                     KeyValuePair.Create<string, string>("1", "2"),
                 },
-                variables
+                result.Variables
             );
         }
 
         [Fact]
         public void returns_expected_filePath_when_none_is_defined()
         {
-            var (_, _, filePath) = CommandLineParser.Parse(new []{"dummy1", "dummy2=dummy3"});
-            Assert.Null(filePath);
+            var result = CommandLineParser.Parse(new []{"dummy1", "dummy2=dummy3"});
+            Assert.Null(result.FilePath);
         }
 
         [Fact]
         public void returns_expected_filePath_when_single_is_defined()
         {
-            var (_, _, filePath) = CommandLineParser.Parse(new []{"dummy", "-f", "foo"});
-            Assert.Equal("foo", filePath);
+            var result = CommandLineParser.Parse(new []{"dummy", "-f", "foo"});
+            Assert.Equal("foo", result.FilePath);
         }
 
         [Fact]
         public void returns_expected_filePath_when_multiple_files_is_defined()
         {
-            var (_, _, filePath) = CommandLineParser.Parse(new []{"dummy", "-f", "foo", "-f", "bar"});
-            Assert.Equal("bar", filePath);
+            var result = CommandLineParser.Parse(new []{"dummy", "-f", "foo", "-f", "bar"});
+            Assert.Equal("bar", result.FilePath);
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace pipe.test
         [Fact]
         public void returns_expected_step_variable_and_filepath_when_all_is_defined()
         {
-            var (steps, variables, filePath) = CommandLineParser.Parse(new []
+            var result = CommandLineParser.Parse(new []
             {
                 "foo", 
                 "-f", 
@@ -130,12 +130,12 @@ namespace pipe.test
             
             Assert.Equal(
                 expected: new[] {"foo"},
-                actual: steps
+                actual: result.Steps
             );
 
             Assert.Equal(
                 expected: "bar",
-                actual: filePath
+                actual: result.FilePath
             );
             
             Assert.Equal(
@@ -143,8 +143,47 @@ namespace pipe.test
                 {
                     KeyValuePair.Create<string, string>("baz", "qux"),
                 },
-                actual: variables
+                actual: result.Variables
             );
+        }
+        
+        [Fact]
+        public void returns_expected_verbosity_when_not_set()
+        {
+            var result = CommandLineParser.Parse(new []{"dummy"});
+            Assert.False(result.IsVerbose);
+        }
+
+        [Fact]
+        public void returns_expected_verbosity_when_set()
+        {
+            var result = CommandLineParser.Parse(new []{"dummy", "-v"});
+            Assert.True(result.IsVerbose);
+        }
+
+        [Fact]
+        public void duno()
+        {
+            var result = CommandLineParser.Parse(new []{"build", "test", "-v", "-f", "Makefile"});
+
+            Assert.Equal(
+                expected: new[] {"build", "test"},
+                actual: result.Steps
+            );
+            
+            Assert.True(result.IsVerbose);
+            Assert.Equal(
+                expected: "Makefile",
+                actual: result.FilePath
+            );
+            
+            Assert.Empty(result.Variables);
+        }
+
+        [Fact]
+        public void duno2()
+        {
+            Assert.Throws<InvalidArgumentException>(() => CommandLineParser.Parse(new[] {"dummy", "-x"}));
         }
     }
 }

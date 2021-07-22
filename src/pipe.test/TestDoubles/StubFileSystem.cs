@@ -6,11 +6,11 @@ namespace pipe.test.TestDoubles
         private readonly bool _fileExists;
         private readonly string[] _fileContents;
 
-        public StubFileSystem(string localFile = "", bool fileExists = false, string[] fileContents = null)
+        public StubFileSystem(string localFile = null, string[] fileContents = null)
         {
-            _localFile = localFile;
-            _fileExists = fileExists;
             _fileContents = fileContents;
+            _localFile = localFile ?? (fileContents != null ? "dummy-file" : null);
+            _fileExists = fileContents != null;
         }
         
         public string GetPathForLocalFile(string fileName) => _localFile;

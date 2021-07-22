@@ -29,9 +29,7 @@ namespace pipe.test
         public void throws_expected_exception_if_requested_step_is_not_defined_in_pipeline_file()
         {
             var sut = new EngineBuilder()
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {""})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {""})
                 )
                 .Build();
             
@@ -45,9 +43,7 @@ namespace pipe.test
             
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo:", "  bar", "baz:", "  qux"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo:", "  bar", "baz:", "  qux"})
                 )
                 .Build();
 
@@ -63,9 +59,7 @@ namespace pipe.test
             
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo:", "  bar", "  baz", "  qux"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo:", "  bar", "  baz", "  qux"})
                 )
                 .Build();
 
@@ -81,9 +75,7 @@ namespace pipe.test
             
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo:", "  bar", "baz:", "  qux"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo:", "  bar", "baz:", "  qux"})
                 )
                 .Build();
 
@@ -98,9 +90,7 @@ namespace pipe.test
             var spy = new SpyCommandFactory(new StubCommandFactory(new Command("foo", _ => "dummy")));
             var sut = new EngineBuilder()
                 .WithCommandFactory(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[]
+                .WithFileSystem(new StubFileSystem(fileContents: new[]
                     {
                         "SHELL=foo", 
                         "dummy:", 
@@ -129,9 +119,7 @@ namespace pipe.test
             var sut = new EngineBuilder()
                 .WithCommandFactory(commandFactory)
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"dummy:", "  dummy"}
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"dummy:", "  dummy"}
                 ))
                 .Build();
             
@@ -147,9 +135,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(new ErroneusCommandLineExecutorDecorator(spy, invocationToFailOn: 2))
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo:", "  bar", "  baz", "  qux"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo:", "  bar", "  baz", "  qux"})
                 )
                 .Build();
 
@@ -172,9 +158,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(new ErroneusCommandLineExecutorDecorator(spy, invocationToFailOn: 2))
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo:", "  bar", "baz:", "  qux"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo:", "  bar", "baz:", "  qux"})
                 )
                 .Build();
 
@@ -197,9 +181,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo: baz", "  bar", "baz:", "  qux"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo: baz", "  bar", "baz:", "  qux"})
                 )
                 .Build();
 
@@ -215,9 +197,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo: bar baz qux", "  foo-action", "bar:", "  bar-action", "baz:", "  baz-action", "qux:", "  qux-action"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo: bar baz qux", "  foo-action", "bar:", "  bar-action", "baz:", "  baz-action", "qux:", "  qux-action"})
                 )
                 .Build();
 
@@ -233,9 +213,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo: bar", "bar:", "  bar-action"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo: bar", "bar:", "  bar-action"})
                 )
                 .Build();
 
@@ -251,9 +229,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo: bar","  foo-action", "bar: baz", "  bar-action", "baz: qux", "  baz-action", "qux:", "  qux-action"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo: bar","  foo-action", "bar: baz", "  bar-action", "baz: qux", "  baz-action", "qux:", "  qux-action"})
                 )
                 .Build();
 
@@ -269,9 +245,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo: foo","  dummy"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo: foo","  dummy"})
                 )
                 .Build();
 
@@ -285,9 +259,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo: bar","  dummy", "bar: foo", "  dummy"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo: bar","  dummy", "bar: foo", "  dummy"})
                 )
                 .Build();
 
@@ -301,9 +273,7 @@ namespace pipe.test
 
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(new ErroneusCommandLineExecutorDecorator(spy, invocationToFailOn: 1))
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[] {"foo: bar", "  foo-action", "bar:", "  bar-action"})
+                .WithFileSystem(new StubFileSystem(fileContents: new[] {"foo: bar", "  foo-action", "bar:", "  bar-action"})
                 )
                 .Build();
 
@@ -329,9 +299,7 @@ namespace pipe.test
             var sut = new EngineBuilder()
                 .WithCommandLineExecutor(spy)
                 .WithVariableHelper(variableHelper)
-                .WithFileSystem(new StubFileSystem(
-                    fileExists: true,
-                    fileContents: new[]
+                .WithFileSystem(new StubFileSystem(fileContents: new[]
                     {
                         "FOO=bar",
                         "foo:",
@@ -346,5 +314,9 @@ namespace pipe.test
         }
         
         // test: environment variables are expanded when actions are executed
+        
+        // test: help command
+        
+        // test: dry run
     }
 }
