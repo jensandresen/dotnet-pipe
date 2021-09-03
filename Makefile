@@ -26,16 +26,21 @@ pack:
 		-o $(OUTPUT_DIR) \
 		./pipe/pipe.csproj
 
+release: CONFIGURATION=Release
+release: clean restore build test pack
+
 reinstall:
 	-dotnet tool uninstall pipe
-	-dotnet tool uninstall dotnet-pipe
+	-dotnet tool uninstall dotnet-pipeline
+	-dotnet tool uninstall pipe-cli
 	-rm -Rf ~/.nuget/packages/pipe
-	-rm -Rf ~/.nuget/packages/dotnet-pipe
+	-rm -Rf ~/.nuget/packages/dotnet-pipeline
+	-rm -Rf ~/.nuget/packages/pipe-cli
 	dotnet tool install \
 		--local \
 		--no-cache \
 		--add-source "$(OUTPUT_DIR)" \
-		dotnet-pipe
+		pipe-cli
 
 .PHONY: fulltest
 fulltest: clean restore build test pack reinstall

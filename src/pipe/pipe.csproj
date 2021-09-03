@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>dotnet-pipe</PackageId>
+    <PackageId>pipe-cli</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
     <Authors>Jens Andresen</Authors>
     <Description>A command line tool for defining an automation pipeline for e.g. restore, build, test, package, deploy etc. It's heavily inspired by make and makefiles.</Description>
-    <Tags>pipe;dotnet pipe;make;makefile;makefiles;pipeline;pipelines;cli;command;command line;terminal;automation;ci/cd</Tags>
+    <Tags>pipe;pipe-cli;make;makefile;makefiles;pipeline;pipelines;cli;command;command line;terminal;automation;ci/cd</Tags>
     <RepositoryUrl>https://github.com/jensandresen/dotnet-pipe</RepositoryUrl>
     <ProjectUrl>https://github.com/jensandresen/dotnet-pipe</ProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
