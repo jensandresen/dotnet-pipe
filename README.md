@@ -2,7 +2,7 @@
 
 [![NuGet Status](https://buildstats.info/nuget/pipe-cli)](https://buildstats.info/nuget/pipe-cli)
 
-** TL;DR; ** dotnet cli tool - inspired by make - for declaring and executing a pipeline.
+**TL;DR;** dotnet cli tool - inspired by make - for declaring and executing a pipeline.
 
 ## Introduction
 
