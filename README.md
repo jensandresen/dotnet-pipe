@@ -233,6 +233,81 @@ FOO=foo
 BAR=bar # the rest of this line is also a comment
 ```
 
+### Example 10: custom shell definition
+
+It's possible to specify a custom definition of how your `actions` are executed in a shell. Instead of the built-in shell definition, you can specify your own using the following pattern in your `pipeline` file:
+
+```
+SHELL=!/absolute/path/to/shell/or/alias, --some-arg <args>
+...
+```
+
+When you begin your shell definition with an exclamation mark `!`, `pipe` will interpret the expression as a custom shell definition. It will expect that the definition is split into two sections separated by a comma `,` - where the first part is the shell executable, either an absolute path to or an alias. It is also possible to specify a relative path but then your would need to include the executable in the repository (e.g. commit the binary) - you should prefer the other options and either target a generally available shell or specify how to set it up (but keep build environments in mind as well).
+
+The second part is how your `actions` in your `pipeline` file is given as arguments to your chosen shell, like the following simplified examples:
+
+```shell
+bash -c "echo test"
+```
+
+In the example above the command `echo test` would be passed to the selected shell of `bash` by specifying the `-c` option.
+
+You can specify that in a custom shell definition like this:
+
+```
+SHELL=bash, -c "<args>"
+
+...
+
+some-step:
+    echo test
+```
+
+`pipe` would replace the `<args>` part of the custom shell definition with `echo test` from the action of the `some-step` step definition. It would keep the double quotes and only replace the `<args>` part.
+
+On Windows your can do:
+
+```shell
+cmd.exe /C echo test
+```
+
+This would be defined as:
+
+```
+SHELL=cmd.exe, /C <args>
+
+...
+
+some-step:
+    echo test
+```
+
+Again only the `<args>` part would be replaced with the action from the `some-step` definition.
+
+If a custom shell definition requires characters from the action definition to be escaped (or replaced with alternatives), it's possible to add character replacement groups to the custom shell definition. This is specified in a `[<char>=<replacement>]` format like this:
+
+```
+SHELL=bash,["='] -c "<args>"
+
+...
+
+some-step:
+    echo "test"
+```
+
+Because double quotes are used in the action definition, it needs to be escaped when using a custom shell definition that also has double quotes. The resulting command ends up being:
+
+```
+bash -c "echo 'test'"
+```
+
+You can specify multiple replacement groups like:
+
+```
+SHELL=bash,[a=A][b=B][c=C] -c "<args>"
+...
+```
+
 ## Normal development flow
 
 The goal of `pipe` is to require as little as possible to be installed on the environemnt that it is going to be used in. Another goal of `pipe` is that because it gives both structure and execution control of a pipeline, you should be able to specify most if not all the steps that your would require of a pipeline. Because `pipe` is built as a dotnet cli tool, you will need to install the tool before you can use it (kinda obvious).
