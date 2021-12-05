@@ -45,3 +45,15 @@ reinstall:
 .PHONY: fulltest
 fulltest: clean restore build test pack reinstall
 	dotnet pipe build test -v -f Makefile
+
+.PHONY: changelog
+changelog:
+	@echo "Generating changelog..."
+	@docker run \
+		-i \
+		-v "${PWD}":/app \
+		-e "WORKDIR=/app" \
+		-e "CONFIG=cliff.toml" \
+		-e "REPOSITRY=.git" \
+		-e "OUTPUT=CHANGELOG.md" \
+		orhunp/git-cliff:latest
