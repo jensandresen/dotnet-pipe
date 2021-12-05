@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>pipe-cli</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
     <Authors>Jens Andresen</Authors>
     <Description>A command line tool for defining an automation pipeline for e.g. restore, build, test, package, deploy etc. It's heavily inspired by make and makefiles.</Description>
     <Tags>pipe;pipe-cli;make;makefile;makefiles;pipeline;pipelines;cli;command;command line;terminal;automation;ci/cd</Tags>

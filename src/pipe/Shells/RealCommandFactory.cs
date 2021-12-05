@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace pipe.Shells
 {
@@ -27,11 +29,44 @@ namespace pipe.Shells
             }
         }
         
+        private Command CreateCustomCommand(string name)
+        {
+            var match = Regex.Match(name, @"^\!(?<exe>.*?),\s*(?<args>.*?)$");
+            var definedExe = match.Groups["exe"].Value;
+            var definedArgs = match.Groups["args"].Value;
+
+            const string argsPlaceholder = "<args>";
+            Func<string, string> replacer = input => definedArgs.Replace(argsPlaceholder, input);
+            
+            var argMatches = Regex.Match(definedArgs, @"^(?<replacement>\[.=.*?\])*(?<args>.*?)$");
+            if (argMatches.Groups["replacement"].Success)
+            {
+                replacer = input =>
+                {
+                    var alteredInput = input;
+                    foreach (Capture capture in argMatches.Groups["replacement"].Captures)
+                    {
+                        var temp = Regex.Match(capture.Value, @"^\[(?<key>.)=(?<value>.*?)\]$");
+                        alteredInput = alteredInput.Replace(temp.Groups["key"].Value, temp.Groups["value"].Value);
+                    }
+
+                    return argMatches.Groups["args"].Value.Replace(argsPlaceholder, alteredInput);
+                };
+            }
+
+            return new Command(definedExe, replacer);
+        }
+        
         public Command Create(string name)
         {
             if (name == "?")
             {
                 name = GetDefaultOSShell();
+            }
+
+            if (name.StartsWith("!"))
+            {
+                return CreateCustomCommand(name);
             }
             
             switch (name)

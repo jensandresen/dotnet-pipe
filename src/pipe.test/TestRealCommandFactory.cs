@@ -58,5 +58,34 @@ namespace pipe.test
             Assert.Equal(expectedShell, result.Shell);
             Assert.Equal(expectedPreparedArgument, result.PrepareArguments(inputAction));
         }
+
+        [Theory]
+        [InlineData("!xoxo,<args>", "foo", "xoxo", "foo", OperatingSystemType.Linux)]
+        [InlineData("!xoxo,<args>", "foo", "xoxo", "foo", OperatingSystemType.Mac)]
+        [InlineData("!xoxo,<args>", "foo", "xoxo", "foo", OperatingSystemType.Windows)]
+        [InlineData("!xoxo, <args>", "foo", "xoxo", "foo", OperatingSystemType.Linux)]
+        [InlineData("!xoxo, <args>", "foo", "xoxo", "foo", OperatingSystemType.Mac)]
+        [InlineData("!xoxo, <args>", "foo", "xoxo", "foo", OperatingSystemType.Windows)]
+        [InlineData("!xoxo,-c <args>", "foo", "xoxo", "-c foo", OperatingSystemType.Linux)]
+        [InlineData("!xoxo,-c <args>", "foo", "xoxo", "-c foo", OperatingSystemType.Mac)]
+        [InlineData("!xoxo,-c <args>", "foo", "xoxo", "-c foo", OperatingSystemType.Windows)]
+        [InlineData("!xoxo,-c \"<args>\"", "foo", "xoxo", "-c \"foo\"", OperatingSystemType.Linux)]
+        [InlineData("!xoxo,-c \"<args>\"", "foo", "xoxo", "-c \"foo\"", OperatingSystemType.Mac)]
+        [InlineData("!xoxo,-c \"<args>\"", "foo", "xoxo", "-c \"foo\"", OperatingSystemType.Windows)]
+        [InlineData("!xoxo,[\"=']-c \"<args>\"", "\"foo\"", "xoxo", "-c \"'foo'\"", OperatingSystemType.Linux)]
+        [InlineData("!xoxo,[\"=']-c \"<args>\"", "\"foo\"", "xoxo", "-c \"'foo'\"", OperatingSystemType.Mac)]
+        [InlineData("!xoxo,[\"=']-c \"<args>\"", "\"foo\"", "xoxo", "-c \"'foo'\"", OperatingSystemType.Windows)]
+        [InlineData("!xoxo,[\"='][o=x]-c \"<args>\"", "\"foo\"", "xoxo", "-c \"'fxx'\"", OperatingSystemType.Linux)]
+        public void returns_expected_custom_command(string shellDefinition, string inputAction, string expectedShell, string expectedPreparedArgument, OperatingSystemType operatingSystemType)
+        {
+            // !/full/path/or/alias,<args>
+            // !/full/path/or/alias,[1=2]<args>
+            var stubOperatingSystemTypeProvider = new StubOperatingSystemTypeProvider(operatingSystemType);
+            var sut = new RealCommandFactory(stubOperatingSystemTypeProvider);
+            var result = sut.Create(shellDefinition);
+            
+            Assert.Equal(expectedShell, result.Shell);
+            Assert.Equal(expectedPreparedArgument, result.PrepareArguments(inputAction));
+        }
     }
 }
